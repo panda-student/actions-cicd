@@ -14,8 +14,13 @@ jobs:
     - name: 检查npm版本
       run : npm -v
 
-    - name: 安装项目依赖
-      run: npm install
-      
-    - name: 构建项目
-      run: npm run build
+    - name: 安装项目依赖和构建项目
+      run: |
+        npm install
+        npm run build
+
+    - name: 部署
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        branch: deploy
+        folder: dist
