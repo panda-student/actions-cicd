@@ -3,14 +3,19 @@ jobs:
   npm-build:
     name: 构建npm项目
     runs-on: ubuntu-latest
+
     steps:
     - name: 检出代码
       uses: actions/checkout@v4
+
     - name: 显示当前工作目录
       run: pwd
+
     - name: 检查npm版本
       run : npm -v
+
     - name: 安装项目依赖
       run: npm install
+      
     - name: 构建项目
       run: npm run build
