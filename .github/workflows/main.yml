@@ -1,10 +1,6 @@
 name: 构建和部署npm项目
 on: push
 
-permissions:
-  contents: write
-  packages: write
-
 jobs:
   npm-build:
     name: 构建npm项目
