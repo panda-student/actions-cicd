@@ -13,19 +13,16 @@ jobs:
     - name: 检出代码
       uses: actions/checkout@v4
 
-    - name: 显示当前工作目录
-      run: pwd
-
-    - name: 检查npm版本
-      run : npm -v
-
-    - name: 安装项目依赖和构建项目
-      run: |
-        npm install
-        npm run build
-
-    - name: 部署
-      uses: JamesIves/github-pages-deploy-action@v4
+    - name: 登录Docker Hub
+      uses: docker/login-action@v2
       with:
-        branch: deploy
-        folder: dist
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+        
+    - name: 构建Docker镜像
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./Dockerfile
+        push: true
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/vue-app:latest
