@@ -19,7 +19,5 @@ jobs:
     - name: 构建Docker镜像
       uses: docker/build-push-action@v5
       with:
-        context: .
-        file: ./Dockerfile
         push: true
         tags: xiongmaotongxueya/vue-app:latest
