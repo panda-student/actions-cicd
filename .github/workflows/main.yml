@@ -6,5 +6,8 @@ jobs:
     - run: pwd
     - run: ls
   job2:
+    runs-on: ubuntu-latest
+job2:
+    runs-on: ubuntu-latest
     steps:
     - run: node -v
