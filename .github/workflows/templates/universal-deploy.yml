@@ -1,0 +1,110 @@
+# 通用Docker部署工作流模板
+# 支持前端、C#后端、Python后端等多种技术栈的统一部署
+
+name: 通用Docker部署模板
+
+on:
+  workflow_call:
+    inputs:
+      # 环境配置
+      environment:
+        required: true
+        type: string
+        description: "部署环境名称（生产/测试）"
+      branch:
+        required: true
+        type: string
+        description: "触发部署的分支"
+      
+      # 项目配置
+      project_type:
+        required: true
+        type: string
+        description: "项目类型（frontend/csharp/python）"
+      image_name:
+        required: true
+        type: string
+        description: "Docker镜像名称"
+      image_tag:
+        required: true
+        type: string
+        description: "Docker镜像标签"
+      
+      # 部署配置
+      port:
+        required: true
+        type: string
+        description: "服务端口映射"
+      server_label:
+        required: true
+        type: string
+        description: "目标服务器标签"
+      
+      # 可选配置
+      dockerfile_path:
+        required: false
+        type: string
+        default: "deployment/Dockerfile"
+        description: "Dockerfile路径"
+      compose_file_path:
+        required: false
+        type: string
+        default: "deployment/docker-compose.yml"
+        description: "Docker Compose文件路径"
+      env_file_path:
+        required: false
+        type: string
+        default: "deployment/.env.${{ inputs.environment == '生产' && 'prod' || 'test' }}"
+        description: "环境变量文件路径"
+
+jobs:
+  universal-deploy:
+    name: 部署${{ inputs.environment }}环境 - ${{ inputs.project_type }}
+    runs-on: [self-hosted, ${{ inputs.server_label }}]
+    
+    permissions:
+      contents: read
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 验证项目配置
+        run: |
+          echo "项目类型: ${{ inputs.project_type }}"
+          echo "镜像名称: ${{ inputs.image_name }}"
+          echo "镜像标签: ${{ inputs.image_tag }}"
+          echo "Dockerfile路径: ${{ inputs.dockerfile_path }}"
+          echo "环境变量文件: ${{ inputs.env_file_path }}"
+          
+          # 验证必要文件存在
+          if [ ! -f "${{ inputs.dockerfile_path }}" ]; then
+            echo "❌ Dockerfile不存在: ${{ inputs.dockerfile_path }}"
+            exit 1
+          fi
+          
+          if [ ! -f "${{ inputs.env_file_path }}" ]; then
+            echo "❌ 环境变量文件不存在: ${{ inputs.env_file_path }}"
+            exit 1
+          fi
+
+      - name: 构建Docker镜像
+        run: |
+          docker build -t ${{ inputs.image_name }}:${{ inputs.image_tag }} -f ${{ inputs.dockerfile_path }} .
+
+      - name: 部署应用
+        working-directory: $(dirname ${{ inputs.compose_file_path }})
+        run: |
+          # 停止并移除现有容器
+          docker-compose --env-file $(basename ${{ inputs.env_file_path }}) down || true
+          
+          # 启动新容器
+          docker-compose --env-file $(basename ${{ inputs.env_file_path }}) up -d
+          
+          # 检查容器状态
+          docker-compose --env-file $(basename ${{ inputs.env_file_path }}) ps
+          
+          # 清理悬空镜像
+          docker image prune -f
+          
+          echo "✅ ${{ inputs.environment }}环境 ${{ inputs.project_type }}项目已成功部署！"

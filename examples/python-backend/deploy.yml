@@ -1,7 +1,7 @@
-# 前端项目Docker部署配置
+# Python后端项目部署配置示例
 # 使用通用部署模板，项目特定配置在此文件中维护
 
-name: 前端项目部署
+name: Python后端项目部署
 
 on:
   push:
@@ -18,10 +18,10 @@ jobs:
     with:
       environment: 生产
       branch: main
-      project_type: frontend
-      image_name: actions-cicd
+      project_type: python
+      image_name: python-backend
       image_tag: prod
-      port: 80
+      port: 8000
       server_label: production-server
       dockerfile_path: deployment/Dockerfile
       compose_file_path: deployment/docker-compose.yml
@@ -34,10 +34,10 @@ jobs:
     with:
       environment: 测试
       branch: dev
-      project_type: frontend
-      image_name: actions-cicd
+      project_type: python
+      image_name: python-backend
       image_tag: test
-      port: 80
+      port: 8001
       server_label: test-server
       dockerfile_path: deployment/Dockerfile
       compose_file_path: deployment/docker-compose.yml
