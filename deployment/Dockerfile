@@ -17,7 +17,7 @@ RUN npm config set registry https://registry.npmmirror.com
 # 先复制依赖配置文件并安装依赖
 # 这样可以利用Docker层缓存，避免每次代码变更都重新安装依赖
 COPY ../package*.json ./
-RUN npm ci --omit=dev
+RUN npm ci
 
 # 复制项目源代码
 COPY .. .
