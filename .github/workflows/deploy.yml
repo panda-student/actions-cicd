@@ -1,0 +1,39 @@
+name: 前端Docker部署
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    
+    # 仅保留读取代码的权限
+    permissions:
+      contents: read
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 构建Docker镜像
+        run: |
+          docker build -t actions-cicd:latest -f ./deployment/Dockerfile .
+
+      - name: 部署应用
+        working-directory: ./deployment
+        run: |
+          # 停止并移除现有容器
+          docker-compose down || true
+          
+          # 启动新容器
+          docker-compose up -d
+          
+          # 检查容器状态
+          docker-compose ps
+          
+          # 清理悬空镜像
+          docker image prune -f
+          
+          echo "✅ 项目已成功部署！"
+          echo "服务运行在: http://localhost:80"
