@@ -36,4 +36,4 @@ jobs:
           docker image prune -f
           
           echo "✅ 项目已成功部署！"
-          echo "服务运行在: http://localhost:80"
+          echo "服务运行在: http://localhost:8080"
