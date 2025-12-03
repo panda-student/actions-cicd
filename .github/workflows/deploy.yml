@@ -20,7 +20,7 @@ jobs:
         working-directory: deployment
         run: |
           # 清理旧镜像（保留最近的3个镜像）
-          docker images --format "table {{.Repository}}:{{.Tag}}\t{{.CreatedAt}}" | grep "$(basename $(pwd))" | tail -n +4 | awk '{print $1}' | xargs -r docker rmi
+          docker images --format "table {{.Repository}}:{{.Tag}}\t{{.CreatedAt}}" | grep "$(basename $(pwd)/../)" | tail -n +4 | awk '{print $1}' | xargs -r docker rmi
           
           # 停止并删除容器
           docker compose down || true
@@ -29,7 +29,7 @@ jobs:
           IMAGE_TAG=${{ github.ref_name }}-$(date +%Y%m%d-%H%M%S)
           
           # 获取项目目录名作为镜像名称
-          PROJECT_NAME=$(basename $(pwd))
+          PROJECT_NAME=$(basename $(pwd)/../)
           
           # 构建镜像并启动容器
           docker compose up -d --build
