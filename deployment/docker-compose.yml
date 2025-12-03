@@ -1,8 +1,8 @@
-# 通用Docker Compose配置模板
-# 支持多环境部署，通过环境变量文件配置
+# 简化Docker Compose配置
+# 使用固定服务名称，避免变量替换问题
 
 services:
-  ${SERVICE_PREFIX}:
+  app:
     # 容器基础配置
     image: ${IMAGE_NAME}:${IMAGE_TAG}
     restart: unless-stopped
