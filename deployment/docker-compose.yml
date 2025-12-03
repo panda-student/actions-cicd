@@ -1,36 +1,27 @@
-# 简化Docker Compose配置
-# 使用固定服务名称，避免变量替换问题
+# 通用Docker Compose配置
+# 所有配置由GitHub Actions根据分支动态注入，无需环境配置文件
 
 services:
   app:
-    # 容器基础配置
-    build: 
+    # 构建配置：使用项目根目录作为构建上下文
+    build:
       context: ..
       dockerfile: deployment/Dockerfile
-    image: ${IMAGE_NAME}:${IMAGE_TAG}
+    
+    # 镜像标签由GitHub Actions根据分支动态设置
+    # main分支 -> prod标签 -> 生产环境
+    # dev/develop分支 -> test标签 -> 开发环境  
+    # 其他分支 -> 分支名标签 -> 开发环境
+    image: $(basename $(pwd)):${IMAGE_TAG:-latest}
+    
+    # 重启策略：除非手动停止，否则自动重启
     restart: unless-stopped
     
-    # 健康检查配置
-    healthcheck:
-      test: ${HEALTHCHECK_COMMAND}
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    
-    # 端口映射
+    # 端口映射：80:80（可根据项目需求修改）
     ports:
-      - "${PORT_MAPPING}"
+      - "80:80"
     
-    # 环境变量（根据项目类型自动适配）
+    # 环境变量：由GitHub Actions根据分支动态设置
+    # 当前项目无需特殊环境变量配置
     environment:
-      - NODE_ENV=${NODE_ENV}
-      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
-      - PYTHON_ENV=${PYTHON_ENV}
-    
-    # 日志配置
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
+      # 当前项目无需特殊环境变量配置
