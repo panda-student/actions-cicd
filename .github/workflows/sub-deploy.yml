@@ -33,12 +33,12 @@ jobs:
         working-directory: deployment
         run: |
           # 停止并移除现有容器
-          docker-compose --env-file .env.${{ inputs.environment == '生产' && 'prod' || 'test' }} down || true
+          docker compose --env-file .env.${{ inputs.environment == '生产' && 'prod' || 'test' }} down || true
           
           # 启动新容器
-          docker-compose --env-file .env.${{ inputs.environment == '生产' && 'prod' || 'test' }} up -d
+          docker compose --env-file .env.${{ inputs.environment == '生产' && 'prod' || 'test' }} up -d
           
           # 检查容器状态
-          docker-compose --env-file .env.${{ inputs.environment == '生产' && 'prod' || 'test' }} ps
+          docker compose --env-file .env.${{ inputs.environment == '生产' && 'prod' || 'test' }} ps
           
           echo "✅ ${{ inputs.environment }}环境已成功部署！"
