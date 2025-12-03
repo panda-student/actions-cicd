@@ -5,7 +5,7 @@
 # 可通过--build-arg覆盖这些参数定制构建行为
 ARG NODE_VERSION=20
 ARG BUILD_COMMAND="npm run build"
-ARG OUTPUT_DIR="/app/dist"
+ARG OUTPUT_DIR="dist"
 
 # === 构建阶段 ===
 FROM node:${NODE_VERSION}-alpine AS builder

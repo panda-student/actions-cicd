@@ -37,4 +37,24 @@ jobs:
           # 检查容器状态
           docker compose --env-file .env.${{ inputs.environment == '生产' && 'prod' || 'test' }} ps
           
+          # 获取端口映射信息并显示访问地址
+          echo "📋 部署信息汇总："
+          echo "========================================"
+          echo "🏷️  环境名称: ${{ inputs.environment }}"
+          echo "🐳 镜像名称: ${{ inputs.image_name }}"
+          echo "🕐 部署时间: $(date)"
+          echo ""
+          
+          # 读取环境变量文件获取端口映射
+          ENV_FILE=".env.${{ inputs.environment == '生产' && 'prod' || 'test' }}"
+          PORT_MAPPING=$(grep "PORT_MAPPING" $ENV_FILE | cut -d'=' -f2)
+          
+          echo "🌐 访问地址:"
+          echo "   - 本地访问: http://localhost:$PORT_MAPPING"
+          echo "   - 网络访问: http://$(hostname -I | awk '{print $1}'):$PORT_MAPPING"
+          echo ""
+          echo "🔍 容器状态:"
+          docker compose --env-file $ENV_FILE ps
+          echo ""
           echo "✅ ${{ inputs.environment }}环境已成功部署！"
+          echo "========================================"
