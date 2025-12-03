@@ -24,16 +24,16 @@ jobs:
           docker compose down || true
           
           # 清理7天前的旧镜像
-          docker images $(basename $(pwd)/../) \
+          docker images $(basename $GITHUB_WORKSPACE) \
             --filter "before=7 days ago" \
             --format "{{.Repository}}:{{.Tag}}" | xargs -r docker rmi || true
           
           
           # 生成包含日期时间的镜像标签
-          IMAGE_TAG=${{ github.ref_name }}-$(date +%Y%m%d-%H%M%S)
+          export IMAGE_TAG=${{ github.ref_name }}-$(date +%Y%m%d-%H%M%S)
           
           # 获取项目目录名作为镜像名称
-          PROJECT_NAME=$(basename $(pwd)/../)
+          export PROJECT_NAME=$(basename $GITHUB_WORKSPACE)
           
           # 构建镜像并启动容器
           docker compose up -d --build
