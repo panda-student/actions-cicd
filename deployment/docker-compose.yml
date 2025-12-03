@@ -11,7 +11,7 @@ services:
     # 使用项目目录名作为镜像名称
     # 使用IMAGE_TAG环境变量作为标签，如果未设置则默认为latest
     image: ${PROJECT_NAME:-app}:${IMAGE_TAG:-latest}
-    container_name: ${PROJECT_NAME:-app}-${IMAGE_TAG:-latest}
+    container_name: ${PROJECT_NAME:-app}
     # 重启策略：除非手动停止，否则总是重启容器
     restart: unless-stopped
     # 端口映射：将主机的80端口映射到容器的80端口
