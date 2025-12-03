@@ -25,18 +25,14 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v4
 
-      - name: 构建Docker镜像
-        run: |
-          docker build -t ${{ inputs.image_name }}:${{ inputs.environment == '生产' && 'prod' || 'test' }} -f deployment/Dockerfile .
-
       - name: 部署应用
         working-directory: deployment
         run: |
           # 停止并移除现有容器
           docker compose --env-file .env.${{ inputs.environment == '生产' && 'prod' || 'test' }} down || true
           
-          # 启动新容器
-          docker compose --env-file .env.${{ inputs.environment == '生产' && 'prod' || 'test' }} up -d
+          # 构建并启动新容器
+          docker compose --env-file .env.${{ inputs.environment == '生产' && 'prod' || 'test' }} up -d --build
           
           # 检查容器状态
           docker compose --env-file .env.${{ inputs.environment == '生产' && 'prod' || 'test' }} ps

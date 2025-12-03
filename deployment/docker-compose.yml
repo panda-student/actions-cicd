@@ -4,6 +4,9 @@
 services:
   app:
     # 容器基础配置
+    build: 
+      context: ..
+      dockerfile: deployment/Dockerfile
     image: ${IMAGE_NAME}:${IMAGE_TAG}
     restart: unless-stopped
     
