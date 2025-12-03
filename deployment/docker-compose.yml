@@ -1,10 +1,18 @@
 # 通用Docker Compose配置
 services:
   app:
+    # 构建配置
     build:
+      # 构建上下文路径，指向项目根目录
       context: ..
+      # Dockerfile文件路径，相对于context路径
       dockerfile: deployment/Dockerfile
-    image: actions-cicd:${IMAGE_TAG:-latest}
+    # 镜像名称和标签
+    # 使用项目目录名作为镜像名称
+    # 使用IMAGE_TAG环境变量作为标签，如果未设置则默认为dev
+    image: ${PROJECT_NAME:-app}:${IMAGE_TAG:-latest}
+    # 重启策略：除非手动停止，否则总是重启容器
     restart: unless-stopped
+    # 端口映射：将主机的80端口映射到容器的80端口
     ports:
       - "80:80"
