@@ -10,7 +10,7 @@ on:
 jobs:
   deploy:
     name: 部署${{ github.ref_name }}环境
-    runs-on: self-hosted
+    runs-on: ${{ github.ref_name }}
     
     steps:
       - name: 检出代码
