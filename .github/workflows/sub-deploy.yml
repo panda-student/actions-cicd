@@ -1,0 +1,44 @@
+# 最小化Docker部署工作流模板
+# dev分支和main分支推送时自动选择环境配置文件执行
+
+name: 最小化部署模板
+
+on:
+  workflow_call:
+    inputs:
+      # 必需配置
+      environment:
+        required: true
+        type: string
+        description: "部署环境名称（生产/测试）"
+      image_name:
+        required: true
+        type: string
+        description: "Docker镜像名称"
+
+jobs:
+  minimal-deploy:
+    name: 部署${{ inputs.environment }}环境
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 构建Docker镜像
+        run: |
+          docker build -t ${{ inputs.image_name }}:${{ inputs.environment == '生产' && 'prod' || 'test' }} -f deployment/Dockerfile .
+
+      - name: 部署应用
+        working-directory: deployment
+        run: |
+          # 停止并移除现有容器
+          docker-compose --env-file .env.${{ inputs.environment == '生产' && 'prod' || 'test' }} down || true
+          
+          # 启动新容器
+          docker-compose --env-file .env.${{ inputs.environment == '生产' && 'prod' || 'test' }} up -d
+          
+          # 检查容器状态
+          docker-compose --env-file .env.${{ inputs.environment == '生产' && 'prod' || 'test' }} ps
+          
+          echo "✅ ${{ inputs.environment }}环境已成功部署！"

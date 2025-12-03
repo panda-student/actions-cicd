@@ -1,44 +1,27 @@
-# 前端项目Docker部署配置
-# 使用通用部署模板，项目特定配置在此文件中维护
+# 最小化部署配置
+# dev分支和main分支推送时自动选择环境配置文件执行
 
-name: 前端项目部署
+name: 最小化部署
 
 on:
   push:
     branches:
       - main
-      - develop
       - dev
 
 jobs:
   deploy-prod:
     if: github.ref == 'refs/heads/main'
     name: 部署生产环境
-    uses: ./.github/workflows/templates/universal-deploy.yml
+    uses: ./.github/workflows/sub-deploy.yml
     with:
       environment: 生产
-      branch: main
-      project_type: frontend
-      image_name: actions-cicd
-      image_tag: prod
-      port: 80
-      server_label: production-server
-      dockerfile_path: deployment/Dockerfile
-      compose_file_path: deployment/docker-compose.yml
-      env_file_path: deployment/.env.prod
+      image_name: myapp/production
 
   deploy-test:
     if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/develop'
     name: 部署测试环境
-    uses: ./.github/workflows/templates/universal-deploy.yml
+    uses: ./.github/workflows/sub-deploy.yml
     with:
       environment: 测试
-      branch: dev
-      project_type: frontend
-      image_name: actions-cicd
-      image_tag: test
-      port: 80
-      server_label: test-server
-      dockerfile_path: deployment/Dockerfile
-      compose_file_path: deployment/docker-compose.yml
-      env_file_path: deployment/.env.test
+      image_name: myapp/test

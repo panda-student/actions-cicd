@@ -1,7 +1,7 @@
-# Python后端项目部署配置示例
-# 使用通用部署模板，项目特定配置在此文件中维护
+# Python后端最小化部署配置示例
+# dev分支和main分支推送时自动选择环境配置文件执行
 
-name: Python后端项目部署
+name: Python后端部署
 
 on:
   push:
@@ -14,31 +14,15 @@ jobs:
   deploy-prod:
     if: github.ref == 'refs/heads/main'
     name: 部署生产环境
-    uses: ./.github/workflows/templates/universal-deploy.yml
+    uses: ./.github/workflows/sub-deploy.yml
     with:
       environment: 生产
-      branch: main
-      project_type: python
       image_name: python-backend
-      image_tag: prod
-      port: 8000
-      server_label: production-server
-      dockerfile_path: deployment/Dockerfile
-      compose_file_path: deployment/docker-compose.yml
-      env_file_path: deployment/.env.prod
 
   deploy-test:
     if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/develop'
     name: 部署测试环境
-    uses: ./.github/workflows/templates/universal-deploy.yml
+    uses: ./.github/workflows/sub-deploy.yml
     with:
       environment: 测试
-      branch: dev
-      project_type: python
       image_name: python-backend
-      image_tag: test
-      port: 8001
-      server_label: test-server
-      dockerfile_path: deployment/Dockerfile
-      compose_file_path: deployment/docker-compose.yml
-      env_file_path: deployment/.env.test
