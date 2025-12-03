@@ -1,6 +1,5 @@
 # 通用部署配置
 # 根据分支自动生成镜像标签，无需环境配置文件
-# 此工作流适用于任意项目，只需维护deployment目录下的配置
 
 name: 通用部署
 
@@ -17,29 +16,17 @@ jobs:
     name: 部署${{ github.ref_name }}环境
     runs-on: self-hosted
     
-    # 允许所有分支部署
-    if: always()
-    
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
         
       - name: 设置镜像标签
         id: set-image-tag
-        run: |
-          # 直接使用分支名作为镜像标签
-          echo "IMAGE_TAG=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+        run: echo "IMAGE_TAG=${{ github.ref_name }}" >> $GITHUB_OUTPUT
           
       - name: 执行部署
         working-directory: deployment
         run: |
-          # 停止并移除现有容器
           docker compose down || true
-          
-          # 构建并启动新容器
           IMAGE_TAG=${{ steps.set-image-tag.outputs.IMAGE_TAG }} docker compose up -d --build
-          
-          # 显示部署信息
-          echo "✅ 部署完成"
-          echo "🐳 镜像名称: actions-cicd:${{ steps.set-image-tag.outputs.IMAGE_TAG }}"
-          echo "📦 容器名称: deployment-app-1"
+          echo "✅ 部署完成 - 镜像: actions-cicd:${{ steps.set-image-tag.outputs.IMAGE_TAG }}"

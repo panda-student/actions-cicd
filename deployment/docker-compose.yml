@@ -1,27 +1,10 @@
 # 通用Docker Compose配置
-# 所有配置由GitHub Actions根据分支动态注入，无需环境配置文件
-
 services:
   app:
-    # 构建配置：使用项目根目录作为构建上下文
     build:
       context: ..
       dockerfile: deployment/Dockerfile
-    
-    # 镜像标签由GitHub Actions根据分支动态设置
-    # main分支 -> prod标签 -> 生产环境
-    # dev/develop分支 -> test标签 -> 开发环境  
-    # 其他分支 -> 分支名标签 -> 开发环境
     image: $(basename $(pwd)):${IMAGE_TAG:-latest}
-    
-    # 重启策略：除非手动停止，否则自动重启
     restart: unless-stopped
-    
-    # 端口映射：80:80（可根据项目需求修改）
     ports:
       - "80:80"
-    
-    # 环境变量：由GitHub Actions根据分支动态设置
-    # 当前项目无需特殊环境变量配置
-    environment:
-      # 当前项目无需特殊环境变量配置
