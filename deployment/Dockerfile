@@ -23,8 +23,11 @@ FROM nginx:alpine
 # 从构建阶段复制构建产物到nginx的静态文件目录
 COPY --from=builder /app/dist /usr/share/nginx/html
 
+# 确保nginx有权限读取文件
+RUN chmod -R 755 /usr/share/nginx/html
+
 # 暴露80端口（nginx默认端口）
 EXPOSE 80
 
 # 启动nginx服务器（前台运行，保持容器运行）
-CMD nginx -g 'daemon off;'
+CMD ["nginx", "-g", "daemon off;"]
