@@ -23,9 +23,10 @@ jobs:
           # 停止并删除容器
           docker compose down || true
           
-          # 清理旧镜像（保留最近的3个镜像）
-          PROJECT_ROOT_NAME=$(basename $(pwd)/../)
-          docker images --format "table {{.Repository}}:{{.Tag}}\t{{.CreatedAt}}" | grep "^${PROJECT_ROOT_NAME}:" | tail -n +4 | awk '{print $1":"$2}' | xargs -r docker rmi --force || true
+          # 清理7天前的旧镜像
+          docker images $(basename $(pwd)/../) \
+            --filter "before=7 days ago" \
+            --format "{{.Repository}}:{{.Tag}}" | xargs -r docker rmi || true
           
           
           # 生成包含日期时间的镜像标签
