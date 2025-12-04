@@ -1,6 +1,6 @@
-# 通用部署配置
-# 根据分支自动生成镜像标签，无需环境配置文件
-name: 通用部署
+# 项目部署配置
+# 引用独立仓库中的可重用部署工作流
+name: 项目部署
 on:
   push:
     branches:
@@ -9,33 +9,13 @@ on:
 
 jobs:
   deploy:
-    name: 部署${{ github.ref_name }}环境
-    runs-on: ${{ github.ref_name }}
-    
-    steps:
-      - name: 检出代码
-        uses: actions/checkout@v4
-        
-      - name: 执行部署
-        working-directory: deployment
-        run: |
-          
-          # 停止并删除容器
-          docker compose down || true
-          
-          # 清理7天前的旧镜像
-          docker images $(basename $GITHUB_WORKSPACE) \
-            --filter "before=7 days ago" \
-            --format "{{.Repository}}:{{.Tag}}" | xargs -r docker rmi || true
-          
-          
-          # 生成包含日期时间的镜像标签
-          export IMAGE_TAG=${{ github.ref_name }}-$(date +%Y%m%d-%H%M%S)
-          
-          # 获取项目目录名作为镜像名称
-          export PROJECT_NAME=$(basename $GITHUB_WORKSPACE)
-          
-          # 构建镜像并启动容器
-          docker compose up -d --build
-          
-          echo "✅ 部署完成 - 镜像: $PROJECT_NAME:$IMAGE_TAG"
+    # 引用独立仓库中的可重用工作流
+    # 格式: uses: owner/repo/.github/workflows/workflow.yml@ref
+    # 使用独立仓库中的可重用工作流文件
+    # 语法：uses: <owner>/<repo>/.github/workflows/<workflow>.yml@<ref>
+    # @main 表示引用目标仓库（panda-student/github-actions-workflows）的 main 分支上的工作流文件
+    uses: panda-student/github-actions-workflows/.github/workflows/deploy.yml@main
+    # 如果需要传递自定义参数
+    with:
+      branch: ${{ github.ref_name }}
+      working-directory: deployment
